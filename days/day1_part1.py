@@ -6,4 +6,4 @@ class Day1(Day):
     part = 1
 
     def solve(self):
-        print(self.parse_input())
+        data = self.parse_input()

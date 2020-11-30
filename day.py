@@ -3,6 +3,11 @@ from pathlib import Path
 from typing import Optional
 
 
+class DayInputFileNotFoundError(Exception):
+    def __init__(self, day, part, search_path):
+        super().__init__(f'could not find input file for day {day}\n\t[day: {day}, part: {part}, path: {search_path}]')
+
+
 class Day:
     day = 0
     part = 1
@@ -10,7 +15,8 @@ class Day:
     def _read_input_from_file(self) -> str:
         file = Path(f'inputs/{self.day}.txt')
         if not file.exists():
-            raise RuntimeError(f'{str(file)} does not exists!')
+            raise DayInputFileNotFoundError(self.day, self.part, file)
+
         with file.open() as reader:
             return reader.read()
 
@@ -18,7 +24,7 @@ class Day:
         return self._read_input_from_file()
 
     def solve(self):
-        pass
+        raise NotImplementedError(f'solve() is not implemented for [day: {self.day}, part: {self.part}]')
 
 
 class DayNotFoundError(Exception):
@@ -28,7 +34,7 @@ class DayNotFoundError(Exception):
 
 class MissingDayFileError(Exception):
     def __init__(self, day, part, search_path) -> None:
-        super().__init__(f'day python does not exists\n\t[day: {day}, part: {part}, path: {search_path}]')
+        super().__init__(f'day python does not exist\n\t[day: {day}, part: {part}, path: {search_path}]')
 
 
 def run_day(day, part):
