@@ -10,7 +10,9 @@ class Day1Part2(Day):
         return list(map(int, self.input_text_lines))
 
     def solve(self):
-        for n1, n2, n3 in combinations(self.parse_input(), 3):
-            if n1 + n2 + n3 == 2020:
+        seen = set()
+        for n1, n2 in combinations(self.parse_input(), 2):
+            if (n3 := 2020 % (n1 + n2)) in seen:
                 print(f'day 1 part 2 answer: {n1 * n2 * n3}')
-                break
+                return
+            seen.update((n1, n2))
