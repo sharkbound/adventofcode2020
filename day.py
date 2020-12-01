@@ -50,7 +50,7 @@ def run_day(day, part):
         module_locals = {}
         exec(reader.read(), module_globals, module_locals)
         for key, value in {**module_globals, **module_locals}.items():
-            if value is not Day and isclass(value) and issubclass(value, Day):
+            if value is not Day and isclass(value) and issubclass(value, Day) and value.day == day and value.part == part:
                 day_to_run = value()
                 break
     if day_to_run is None:
