@@ -1,5 +1,4 @@
 from day import Day
-from itertools import combinations
 
 
 class Day1Part1(Day):
@@ -10,8 +9,9 @@ class Day1Part1(Day):
         return list(map(int, self.input_text_lines))
 
     def solve(self):
-        data = self.parse_input()
-        for n1, n2 in combinations(data, 2):
-            if n1 + n2 == 2020:
-                print(f'day 1 part 1 answer: {n1 * n2}')
-                break
+        seen = set()
+        for number in self.parse_input():
+            if 2020 - number in seen:
+                print(f'day 1 part 1 answer: {number * (2020 - number)}')
+                return
+            seen.add(number)
