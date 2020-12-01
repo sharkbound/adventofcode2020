@@ -1,31 +1,8 @@
+from functools import cached_property
 from inspect import isclass
 from pathlib import Path
 from typing import Optional
 from importlib import import_module
-
-
-class DayInputFileNotFoundError(Exception):
-    def __init__(self, day, part, search_path):
-        super().__init__(f'could not find input file for day {day}\n\t[day: {day}, part: {part}, path: {search_path}]')
-
-
-class Day:
-    day = 0
-    part = 1
-
-    def _read_input_from_file(self) -> str:
-        file = Path(f'inputs/{self.day}.txt')
-        if not file.exists():
-            raise DayInputFileNotFoundError(self.day, self.part, file)
-
-        with file.open() as reader:
-            return reader.read()
-
-    def parse_input(self):
-        return self._read_input_from_file()
-
-    def solve(self):
-        raise NotImplementedError(f'solve() is not implemented for [day: {self.day}, part: {self.part}]')
 
 
 class DayNotFoundError(Exception):
@@ -33,9 +10,40 @@ class DayNotFoundError(Exception):
         super().__init__(f'failed to load day file\n\t[day: {day}, part: {part}, path: {search_path}]')
 
 
+class DayInputFileNotFoundError(Exception):
+    def __init__(self, day, part, search_path):
+        super().__init__(f'could not find input file for day {day}\n\t[day: {day}, part: {part}, path: {search_path}]')
+
+
 class MissingDayFileError(Exception):
     def __init__(self, day, part, search_path) -> None:
         super().__init__(f'day python does not exist\n\t[day: {day}, part: {part}, path: {search_path}]')
+
+
+class Day:
+    day = 0
+    part = 1
+
+    @cached_property
+    def input_path(self):
+        return Path(f'inputs/{self.day}.txt')
+
+    @cached_property
+    def input_text(self):
+        if not self.input_path.exists():
+            raise DayInputFileNotFoundError(self.day, self.part, self.input_path)
+
+        return self.input_path.read_text()
+
+    @cached_property
+    def input_text_lines(self):
+        return self.input_text.splitlines(keepends=False)
+
+    def parse_input(self):
+        return self.input_text
+
+    def solve(self):
+        raise NotImplementedError(f'solve() is not implemented for [day: {self.day}, part: {self.part}]')
 
 
 def run_day(day, part):
