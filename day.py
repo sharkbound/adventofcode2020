@@ -1,6 +1,7 @@
 from functools import cached_property
 from inspect import isclass
 from pathlib import Path
+from time import perf_counter_ns
 from typing import Optional
 from importlib import import_module
 
@@ -45,8 +46,14 @@ class Day:
     def solve(self):
         raise NotImplementedError(f'solve() is not implemented for [day: {self.day}, part: {self.part}]')
 
+    def solve_with_timer(self):
+        start = perf_counter_ns()
+        self.solve()
+        diff = perf_counter_ns() - start
+        print(f'day {self.day} part {self.part} completed in \n\t{diff} NS\n\t{diff * 0.000001} MS\n\t{diff * 0.000000001} SECONDS')
 
-def run_day(day, part):
+
+def run_day(day, part, *, timed=True):
     days_folder = Path('./days/')
     day_py_file = days_folder / f'day{day}_part{part}.py'
     day_to_run: Optional[Day] = None
@@ -63,4 +70,7 @@ def run_day(day, part):
     if day_to_run is None:
         raise DayNotFoundError(day, part, day_py_file)
 
-    day_to_run.solve()
+    if timed:
+        day_to_run.solve_with_timer()
+    else:
+        day_to_run.solve()
