@@ -1,3 +1,7 @@
 from day import run_day
 
-run_day(1, 1)
+day = 1
+
+if day == 1:
+    run_day(1, 1)
+    run_day(1, 2)
