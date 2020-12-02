@@ -1,3 +1,3 @@
 from day import run_day
 
-run_day(1, 1, timed=True)
+# run_day(2, 2)
