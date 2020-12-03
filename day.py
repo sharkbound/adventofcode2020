@@ -40,6 +40,9 @@ class Day:
     def input_text_lines(self):
         return self.input_text.splitlines(keepends=False)
 
+    def get_sample_input(self):
+        return ''
+
     def parse_input(self):
         return self.input_text
 
