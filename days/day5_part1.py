@@ -1,5 +1,4 @@
 from day import Day
-from util.dotdict import DotDict
 
 FRONT, BACK, LEFT, RIGHT = 'FBLR'
 
