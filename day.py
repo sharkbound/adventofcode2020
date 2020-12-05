@@ -53,7 +53,7 @@ class Day:
         start = perf_counter_ns()
         self.solve()
         diff = perf_counter_ns() - start
-        print(f'day {self.day} part {self.part} completed in \n\t{diff} NS\n\t{diff * 0.000001} MS\n\t{diff * 0.000000001} SECONDS')
+        print(f'\nday {self.day} part {self.part} completed in \n\t{diff} NS\n\t{diff * 0.000001} MS\n\t{diff * 0.000000001} SECONDS\n')
 
 
 def run_day(day, part, *, timed=True):
