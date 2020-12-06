@@ -56,7 +56,7 @@ class Day:
         print(f'\nday {self.day} part {self.part} completed in \n\t{diff} NS\n\t{diff * 0.000001} MS\n\t{diff * 0.000000001} SECONDS\n')
 
 
-def run_day(day, part, *, timed=True):
+def run_day(day, part, *, timed=False):
     days_folder = Path('./days/')
     day_py_file = days_folder / f'day{day}_part{part}.py'
     day_to_run: Optional[Day] = None
