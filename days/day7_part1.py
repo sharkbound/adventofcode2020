@@ -61,4 +61,4 @@ class Day7Part1(Day):
 
     def solve(self):
         paths = self.parse_input()
-        print(sum(1 for path in paths if path != SHINY_GOLD and self.has_shiny_gold_bag(path, paths)))
+        print('day 7 part 1 answer:', sum(1 for path in paths if path != SHINY_GOLD and self.has_shiny_gold_bag(path, paths)))

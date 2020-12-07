@@ -1,32 +1,30 @@
 import re
-from collections import defaultdict
-from dataclasses import dataclass
-from typing import List
+from collections import defaultdict, namedtuple, deque
+from typing import Set
 
 from day import Day
 
 RE_RULE = re.compile(r'(?P<color>\w+ \w+) bags contain (?P<other>.+)')
 SHINY_GOLD = 'shiny gold'
+SubBag = namedtuple('SubBag', 'required color')
 
 
-class Day7Part1(Day):
+class Day7Part2(Day):
     day = 7
-    part = 1
+    part = 2
 
     def get_sample_input(self):
-        return ('light red bags contain 1 bright white bag, 2 muted yellow bags.\n'
-                'dark orange bags contain 3 bright white bags, 4 muted yellow bags.\n'
-                'bright white bags contain 1 shiny gold bag.\n'
-                'muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.\n'
-                'shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.\n'
-                'dark olive bags contain 3 faded blue bags, 4 dotted black bags.\n'
-                'vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.\n'
-                'faded blue bags contain no other bags.\n'
-                'dotted black bags contain no other bags.')
+        return ('shiny gold bags contain 2 dark red bags.\n'
+                'dark red bags contain 2 dark orange bags.\n'
+                'dark orange bags contain 2 dark yellow bags.\n'
+                'dark yellow bags contain 2 dark green bags.\n'
+                'dark green bags contain 2 dark blue bags.\n'
+                'dark blue bags contain 2 dark violet bags.\n'
+                'dark violet bags contain no other bags.')
 
     def _parse_contains(self, contains: str):
         return tuple(
-            (int(match[1]), match[2])
+            SubBag(int(match[1]), match[2])
             for v in contains.split(',')
             if (match := re.match(r'^(?P<count>\d+) (?P<color>\w+ \w+) bags?$', v.strip(' .,')))
         )
@@ -40,25 +38,14 @@ class Day7Part1(Day):
             data[color].extend(contains)
         return data
 
-    def iter_direct_sub_bags(self, key, paths):
-        for (number, bag) in paths.get(key, []):
-            yield bag
-
-    def has_shiny_gold_bag(self, key, paths):
-        seen = set()
-        unexplored = {key}
-        while unexplored:
-            # the .copy() is necessary because otherwise it will error from being resized while iterating over it
-            for name in unexplored.copy():
-                if name in seen:
-                    unexplored.discard(name)
-                    continue
-                if name == SHINY_GOLD:
-                    return True
-                seen.add(name)
-                unexplored.update(self.iter_direct_sub_bags(name, paths))
-        return False
+    def count_required_bags(self, key, paths):
+        bags = deque(paths[key])
+        while bags:
+            bag = bags.popleft()
+            yield bag.required
+            for _ in range(bag.required):
+                bags.extend(paths.get(bag.color, []))
 
     def solve(self):
         paths = self.parse_input()
-        print(sum(1 for path in paths if path != SHINY_GOLD and self.has_shiny_gold_bag(path, paths)))
+        print('day 7 part 2 answer:', sum(self.count_required_bags(SHINY_GOLD, paths)))
