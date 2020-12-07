@@ -1,5 +1,8 @@
 from collections import UserDict
 
+__all__ = [
+    'DotDict'
+]
 
 class DotDict(UserDict):
     def __getattr__(self, item):
