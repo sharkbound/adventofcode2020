@@ -6,6 +6,7 @@ from typing import List
 from day import Day
 
 RE_RULE = re.compile(r'(?P<color>\w+ \w+) bags contain (?P<other>.+)')
+SHINY_GOLD = 'shiny gold'
 
 
 class Day7Part1(Day):
@@ -32,26 +33,32 @@ class Day7Part1(Day):
 
     def parse_input(self):
         data = defaultdict(list)
-        for line in self.get_sample_input().split('\n'):
+        for line in self.input_text.split('\n'):
             match = RE_RULE.match(line)
             color = match['color']
             contains = self._parse_contains(match['other'])
             data[color].extend(contains)
         return data
 
+    def iter_direct_sub_bags(self, key, paths):
+        for (number, bag) in paths.get(key, []):
+            yield bag
+
     def has_shiny_gold_bag(self, key, paths):
         seen = set()
-        keys = set(sub for sub in paths[key] if sub)
-        while keys.copy():
-            added = [x for sub in keys for key in sub[1] if (x := paths[key])]
-            keys.update()
-            for key in added:
-                if not key:
+        unexplored = {key}
+        while unexplored:
+            # the .copy() is necessary because otherwise it will error from being resized while iterating over it
+            for name in unexplored.copy():
+                if name in seen:
+                    unexplored.discard(name)
                     continue
-                keys.discard(key)
-            print(keys)
+                if name == SHINY_GOLD:
+                    return True
+                seen.add(name)
+                unexplored.update(self.iter_direct_sub_bags(name, paths))
+        return False
 
     def solve(self):
         paths = self.parse_input()
-        print(*paths.items(), sep='\n')
-        print(sum(1 for path in paths if self.has_shiny_gold_bag(path, paths)))
+        print(sum(1 for path in paths if path != SHINY_GOLD and self.has_shiny_gold_bag(path, paths)))
