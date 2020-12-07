@@ -1,5 +1,5 @@
 import re
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from typing import List
 
@@ -46,17 +46,15 @@ class Day7Part1(Day):
 
     def has_shiny_gold_bag(self, key, paths):
         seen = set()
-        unexplored = {key}
-        while unexplored:
-            # the .copy() is necessary because otherwise it will error from being resized while iterating over it
-            for name in unexplored.copy():
-                if name in seen:
-                    unexplored.discard(name)
-                    continue
-                if name == SHINY_GOLD:
-                    return True
-                seen.add(name)
-                unexplored.update(self.iter_direct_sub_bags(name, paths))
+        search = deque([key])
+        while search:
+            name = search.popleft()
+            if name in seen:
+                continue
+            if name == SHINY_GOLD:
+                return True
+            seen.add(name)
+            search.extend(self.iter_direct_sub_bags(name, paths))
         return False
 
     def solve(self):
