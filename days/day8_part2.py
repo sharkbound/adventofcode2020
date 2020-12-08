@@ -38,6 +38,7 @@ class CPU:
                 self.ptr += 1
             elif opcode is OPCode.jmp:
                 self.ptr += data
+
         return RunResult(self.acc, cycle_limit == 0)
 
 
