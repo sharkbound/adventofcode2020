@@ -21,9 +21,9 @@ class View:
         return bool(self.ahead)
 
 
-class Day9Part1(Day):
+class Day9Part2(Day):
     day = 9
-    part = 1
+    part = 2
 
     def get_sample_input(self):
         return '35\n20\n15\n25\n47\n40\n62\n55\n65\n95\n102\n117\n150\n182\n127\n219\n299\n277\n309\n576'
@@ -31,11 +31,25 @@ class Day9Part1(Day):
     def parse_input(self):
         return list(map(int, self.input_text_lines))
 
+    def find_part1_solution(self, data):
+        part1_view = View(data, 25)
+        invalid_number = -1
+        while part1_view:
+            value = part1_view.current
+            if not any(value - n in part1_view.preample for n in part1_view.preample):
+                invalid_number = value
+                break
+            part1_view.advance()
+        return invalid_number
+
     def solve(self):
-        view = View(self.parse_input(), 25)
-        while view:
-            value = view.current
-            if not any(value - n in view.preample for n in view.preample):
-                print(f'day 9 part 1 answer: {value}')
+        data = self.parse_input()
+        invalid_number = self.find_part1_solution(data)
+
+        for start_index in range(len(data)):
+            window = data[start_index:]
+            while window and sum(window) > invalid_number:
+                window.pop()
+            if window and sum(window) == invalid_number:
+                print('day 9 part 2 answer:', min(window) + max(window))
                 return
-            view.advance()
