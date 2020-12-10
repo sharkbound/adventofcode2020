@@ -15,8 +15,11 @@ class Day10Part1(Day):
         return np.fromstring(self.input_text, dtype=np.int64, sep='\n')
 
     def solve(self):
-        (data := self.parse_input()).sort()
+        data = self.parse_input()
+        data.sort()
+
         counter = Counter(data[i + 1] - data[i] for i in range(len(data) - 1))
         counter[data.max() + 3 - data[-1]] += 1
         counter[data[0]] += 1
+
         print('day 10 part 1 answer:', counter[1] * counter[3])
