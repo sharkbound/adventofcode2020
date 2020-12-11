@@ -43,7 +43,7 @@ class Day11Part1(Day):
     def solve(self):
         grid = self.parse_input()
         buffer = grid.copy()
-        for _ in range(4):
+        for _ in range(5):
             for indexes, char in np.ndenumerate(grid):
                 neighbors = self.get_neighbors(grid, indexes)
                 if char == EMPTY and OCCUPIED not in neighbors:
