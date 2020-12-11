@@ -1,8 +1,5 @@
-from collections import defaultdict, deque, Counter
-from pprint import pprint
-
-from day import Day, util
-import numpy as np
+from collections import Counter
+from day import Day
 
 
 class Day10Part2(Day):
