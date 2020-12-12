@@ -42,9 +42,10 @@ class Day11Part2(Day):
                 if (char := grid[pos[0] + offset_y, pos[1] + offset_x]) == FLOOR:
                     continue
                 yield char
+                break
 
     def parse_input(self):
-        return np.array(tuple(map(list, self.get_sample_input().splitlines())))
+        return np.array(tuple(map(list, self.input_text.splitlines())))
 
     def solve(self):
         grid = self.parse_input()
@@ -60,12 +61,11 @@ class Day11Part2(Day):
                 elif char == OCCUPIED and neighbors.count(OCCUPIED) >= 5:
                     buffer[index] = EMPTY
 
-            print('====================', *map(''.join, buffer), sep='\n')
+            # print('====================', *map(''.join, buffer), sep='\n')
 
             if (grid == buffer).all():
                 grid = buffer.copy()
                 break
             grid = buffer.copy()
-            # breakpoint()
 
         print('day 11 part 2 answer:', (grid == OCCUPIED).sum())
