@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-
+import numpy as np
 from day import Day, util
 
 
@@ -12,13 +12,6 @@ class Dir(Enum):
     south = 'S'
     east = 'E'
     west = 'W'
-
-    def turn(self, left=False, right=False):
-        if left:
-            return {self.north: self.west, self.west: self.south, self.south: self.east, self.east: self.north}[self]
-        if right:
-            return {self.north: self.east, self.east: self.south, self.south: self.west, self.west: self.north}[self]
-        raise ValueError(f'bad turn call: {self} -> {left=} {right=}')
 
 
 class Day12Part2(Day):
@@ -46,21 +39,31 @@ class Day12Part2(Day):
             return x - amount, y
         raise ValueError(f'bad direction for advance: {dir}')
 
+    # taken from a solution in the day 12 part 2 megathread
+    # code: https://topaz.github.io/paste/#XQAAAQBmBwAAAAAAAAA7mkrvHeIvDZUizuO2LI0KXESDEii/+PPLbkSnOPdHL91oz6UXO+wxEeAjikzvPWK2j16DMDQn+GPas4MdIJ9O+3YcqgVt3cT0Onk5rSM+6pBa6P89rK0yip60owDcpspOKWIaSTxmPzGXHTl8/x0Jbav0IB+D3ciBwcnPzYLKRmXrnG4Usg+wd/0XgGwPAv5AgZzpZBAVNkMcf3XOITFAqzLGAIt123KLYHVAy7XxSgBkInGfSyAgci92RbH4g4o93fPbbdI/PLtDrjXEanq9/W4f1x9gWOOL49277oQDQudZdGclT8sbBcIGdEjVbAg3GazbU9kqu6DWHCCjoH/Ojh0nWt4aExm3/tUDP0mA0D9HRlXTSKSKE2OqRO9aGrwp7czf/lDwEXW4E9X4Wp8dcCM/Zzy4yDG53DFW/TGHHx8qRntGHZbDcrg2sshKCp9TZlfvuoPURqRnfwQPzZxQB8c0LDFD2yo0KAR9vU/zwAwUavOTCxfskf8eSLpMT1ZUHNDSd782E8y0eaLlfzUZgRNZ8s7J9sV06WJ53am7hxoolfBe1Vuo11Ap7+kiVpV0CITk64kz7pfI0Ykx6MeMRE+KETI7UYOOuhvuOVs9ymbQUkXniaE2B1tzau86cnchpVRaUKzuz2dn2DNgv/+6eeFl
+    def rotate(self, orientation, degrees):
+        theta = np.radians(degrees)
+        c, s = np.cos(theta), np.sin(theta)
+        rotation_matrix = np.array(((c, -s), (s, c)))
+        new_orient = np.matmul(rotation_matrix, orientation)
+        return new_orient
+
     def solve(self):
         data = self.parse_input()
-        facing = Dir.east
-        x = 0
-        y = 0
+        waypoint = [10, 1]
+        ship = [0, 0]
+
         for instr in data:
             if instr.dir in {Dir.north, Dir.south, Dir.west, Dir.east}:
-                x, y = self.advance(instr.dir, x, y, instr.amount)
-                continue
+                waypoint[:] = self.advance(instr.dir, waypoint[0], waypoint[1], instr.amount)
             elif instr.dir is Dir.forward:
-                x, y = self.advance(facing, x, y, instr.amount)
+                ship[0] += waypoint[0] * instr.amount
+                ship[1] += waypoint[1] * instr.amount
             elif instr.dir is Dir.left:
-                for _ in range(instr.amount // 90):
-                    facing = facing.turn(left=True)
+                # note to self, converting to a int at this stage causes a lot of errors that makes the result WAY off
+                waypoint[:] = self.rotate(waypoint, instr.amount)
             elif instr.dir is Dir.right:
-                for _ in range(instr.amount // 90):
-                    facing = facing.turn(right=True)
-        print(abs(x) + abs(y))
+                waypoint[:] = self.rotate(waypoint, -instr.amount)
+
+        answer = int(sum(map(abs, ship))) + 1
+        print(f'day 12 part 2 answer: {answer}')
