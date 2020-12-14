@@ -6,9 +6,9 @@ from day import Day
 Notes = NamedTuple('Notes', (('timestamp', int), ('ids', List[int])))
 
 
-class Day13Part1(Day):
+class Day13Part2(Day):
     day = 13
-    part = 1
+    part = 2
 
     def get_sample_input(self):
         return '939\n7,13,x,x,59,x,31,19'
@@ -22,4 +22,4 @@ class Day13Part1(Day):
         best_id = min(data.ids, key=lambda x: data.timestamp // x)
         diff = (best_id * ceil(data.timestamp / best_id)) - data.timestamp
         answer = best_id * diff
-        print('day 13 part 1 answer:', answer)
+        print('day 13 part 2 answer:', answer)
