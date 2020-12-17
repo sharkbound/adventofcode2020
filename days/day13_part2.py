@@ -39,6 +39,8 @@ class Day13Part2(Day):
 
     def solve(self):
         data = list(self.parse_input())
+        print(data)
+        return
         buses = [bus for bus in data if bus.is_bus]
         max_bus = max(buses, key=lambda x: x.id)
         _off = max_bus.offset
@@ -49,3 +51,15 @@ class Day13Part2(Day):
             if self.check(data, i - _off):
                 print(f'day 13 part 2 answer: {i - _off}')
                 return
+
+"""
+https://www.reddit.com/r/adventofcode/comments/kc4njx/2020_day_13_solutions/gfr2uh6?utm_source=share&utm_medium=web2x&context=3
+def part2_alt(input):
+    t, step = 0,1
+    for m,d in input:
+        while (t+d) % m != 0:
+            t += step
+        step *= m
+    
+    return t
+"""
