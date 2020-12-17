@@ -16,12 +16,11 @@ class Day13Part2(Day):
         return '939\n7,13,x,x,59,x,31,19'
 
     def parse_input(self):
-        data = self.get_sample_input().splitlines()
-        stamp = int(data[0])
+        data = self.input_text.splitlines()
         offset = 0
         for bus_id in data[1].split(','):
             if bus_id != 'x':
-                yield DotDict(id=int(bus_id), offset=offset, initial_time=stamp, is_bus=True)
+                yield DotDict(id=int(bus_id), offset=offset, is_bus=True)
             else:
                 yield DotDict(is_bus=False)
             offset += 1
@@ -29,37 +28,23 @@ class Day13Part2(Day):
     def bus_id_diff(self, bus_id, timestamp):
         return bus_id * ceil(timestamp / bus_id) - timestamp
 
-    def check(self, data, timestamp):
-        for v in data:
-            if not v.is_bus:
-                continue
-            if v.id * ceil(timestamp / v.id) - timestamp != v.offset:
-                return False
-        return True
-
     def solve(self):
         data = list(self.parse_input())
-        print(data)
-        return
-        buses = [bus for bus in data if bus.is_bus]
-        max_bus = max(buses, key=lambda x: x.id)
-        _off = max_bus.offset
-        # https://adventofcode.com/2020/day/13
-        for i in count(0, max_bus.id):
-            if not i % 3_000_000:
-                print(i)
-            if self.check(data, i - _off):
-                print(f'day 13 part 2 answer: {i - _off}')
-                return
+        buses = sorted((bus for bus in data if bus.is_bus), key=lambda bus: bus.offset)
+        # solution found on megathread for day 13 here:
+        # https://www.reddit.com/r/adventofcode/comments/kc4njx/2020_day_13_solutions/gfr2uh6?utm_source=share&utm_medium=web2x&context=3
+        #
+        # explanation from reddit comment:
+        # The basic idea is that you do not have to test every number for the time t.
+        # First find a time that satisfies the condition for bus 1 (t % id1 ==0).
+        # Then, you only have to check multiples of id1 for the next bus.
+        # Then look for a time t with (t+1 % id2 == 0).
+        # After that, the step size must be a multiple that satisfies both conditions and so on
+        time = 0
+        step = 1
+        for bus in buses:
+            while (time + bus.offset) % bus.id:
+                time += step
+            step *= bus.id
 
-"""
-https://www.reddit.com/r/adventofcode/comments/kc4njx/2020_day_13_solutions/gfr2uh6?utm_source=share&utm_medium=web2x&context=3
-def part2_alt(input):
-    t, step = 0,1
-    for m,d in input:
-        while (t+d) % m != 0:
-            t += step
-        step *= m
-    
-    return t
-"""
+        print(f'day 13 part 2 answer: {time}')
