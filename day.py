@@ -5,6 +5,8 @@ from time import perf_counter_ns
 from typing import Optional
 from importlib import import_module
 import util as util
+from typing import NamedTuple
+from collections import namedtuple
 
 __all__ = [
     'run_day',
@@ -14,6 +16,8 @@ __all__ = [
     'Day',
     'util',
     'Path',
+    'NamedTuple',
+    'namedtuple'
 ]
 
 
@@ -53,6 +57,10 @@ class Day:
 
     def get_sample_input(self):
         return ''
+
+    @property
+    def input_sample(self) -> str:
+        return self.get_sample_input()
 
     def parse_input(self):
         return self.input_text
