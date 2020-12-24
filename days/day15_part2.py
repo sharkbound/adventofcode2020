@@ -17,15 +17,13 @@ class Day15Part2(Day):
 
     def solve(self):
         numbers = self.parse_input()
-        number_len = len(numbers)
         turn_history = defaultdict(lambda: deque(maxlen=2))
         last = 0
-
         for i, n in enumerate(numbers, 1):
             turn_history[n].append(i)
             last = n
-        # https://adventofcode.com/2020/day/15#part2
-        for turn in range(number_len, 2020):
+
+        for turn in range(len(numbers), 30000000):
             if last not in turn_history:
                 turn_history[last].append(turn)
                 last = 0
@@ -33,5 +31,8 @@ class Day15Part2(Day):
                 hist = turn_history[last]
                 hist.append(turn)
                 last = hist[1] - hist[0]
+
+            if not turn % 3_000_000:
+                print(f'progress: {turn / 30000000}%')
 
         print(last)

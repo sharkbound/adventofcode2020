@@ -4,7 +4,6 @@ from day import Day, util
 
 import numpy as np
 
-
 class Day15Part1(Day):
     day = 15
     part = 1
