@@ -8,6 +8,10 @@ if py_file.exists():
     print('that day file already exists!')
     exit()
 
+txt_input_file = Path(f'inputs/{day}.txt')
+if not txt_input_file.exists():
+    txt_input_file.write_text('')
+
 py_file.write_text(f'''
 from day import Day, util
 

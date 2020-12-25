@@ -1,8 +1,6 @@
-from collections import Counter, deque, defaultdict
+from collections import deque, defaultdict
 
-from day import Day, util
-
-import numpy as np
+from day import Day
 
 
 class Day15Part2(Day):
