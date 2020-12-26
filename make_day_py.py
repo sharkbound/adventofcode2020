@@ -14,7 +14,7 @@ if not txt_input_file.exists():
 
 py_file.write_text(f'''
 from day import Day, util
-
+import re
 import numpy as np
 
 
