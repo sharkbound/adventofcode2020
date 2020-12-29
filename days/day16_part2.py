@@ -1,25 +1,15 @@
+import math
+import operator
 import re
+from functools import reduce
+from typing import List
+
 import numpy as np
 from dataclasses import dataclass
 
 from day import Day, util
 
 RE_KEY_VALUE = re.compile(r'(.+): (\d+)-(\d+) or (\d+)-(\d+)')
-
-
-@dataclass()
-class Validator:
-    key: str
-    range1: range
-    range2: range
-    all_valid = set()
-    index: int = None
-
-    def has_index(self):
-        return self.index is not None
-
-    def __post_init__(self):
-        self.all_valid = {*self.range1, *self.range2}
 
 
 class Day16Part2(Day):
@@ -39,33 +29,31 @@ class Day16Part2(Day):
 
     def parse_validator_line(self, line: str):
         key, *nums = RE_KEY_VALUE.search(line).groups()
-        r1_min, r1_max, r2_min, r2_max = map(int, nums)
-        return Validator(key, range(r1_min, r1_max + 1), range(r2_min, r2_max + 1))
-
-    def iter_column(self, tickets, column_index):
-        for ticket in tickets:
-            yield ticket[column_index]
+        a, b, c, d = map(int, nums)
+        return key, lambda value: a <= value <= b or c <= value <= d
 
     def parse_input(self):
         raw = self.input_text.split('\n\n')
         validators = [self.parse_validator_line(line) for line in raw[0].splitlines()]
         my_ticket = util.find_all_ints(raw[1])
-        nearby_tickets = [util.find_all_ints(line) for line in raw[-1].splitlines()[1:]]
+        nearby_tickets = np.array([util.find_all_ints(line) for line in raw[-1].splitlines()[1:]])
         return validators, my_ticket, nearby_tickets
 
-    def assign_validator_index(self, tickets: np.ndarray, validator: Validator):
-        for column in range(tickets.shape[1]):
-            if all(number in validator.all_valid for number in tickets[:, column]):
-                validator.index = column
-                return validator
-        return validator
+    def filter_valid_tickets(self, tickets: np.ndarray, validators: List[tuple]):
+        invalid = set()
+        for index, value in np.ndenumerate(tickets):
+            for valid in validators:
+                if not valid[1](value):
+                    print(end=f'bad: {index[0]}, ')
+                    invalid.add(index[0])
+                    break
+
+        return np.array([v for i, v in enumerate(tickets) if i not in invalid])
 
     def solve(self):
         validators, my_ticket, raw_tickets = self.parse_input()
-        valid_tickets = np.array([ticket for ticket in raw_tickets if any(number in v.all_valid for number in ticket for v in validators)])
-        # https://adventofcode.com/2020/day/16
-        for validator in validators:
-            print(self.assign_validator_index(valid_tickets, validator))
+        tickets = self.filter_valid_tickets(raw_tickets, validators)
+        print(tickets.shape[0], 190)
 
-        answer = sum(my_ticket[validator.index] for validator in validators if validator.key.startswith('departure'))
+        answer = reduce(operator.mul, (my_ticket[validator.index] for validator in validators if validator))
         print('16:2 =>', answer)
