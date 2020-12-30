@@ -1,6 +1,7 @@
 import math
 import operator
 import re
+from collections import namedtuple
 from functools import reduce
 from typing import List
 
@@ -9,7 +10,7 @@ from dataclasses import dataclass
 
 from day import Day, util
 
-RE_KEY_VALUE = re.compile(r'(.+): (\d+)-(\d+) or (\d+)-(\d+)')
+Field = namedtuple('Field', 'name a b c d is_valid')
 
 
 class Day16Part2(Day):
@@ -27,33 +28,26 @@ class Day16Part2(Day):
                 '15,1,5\n'
                 '5,14,9')
 
-    def parse_validator_line(self, line: str):
-        key, *nums = RE_KEY_VALUE.search(line).groups()
+    def parse_field_line(self, line: str):
+        key, *nums = re.search(r'(.+): (\d+)-(\d+) or (\d+)-(\d+)', line).groups()
         a, b, c, d = map(int, nums)
-        return key, lambda value: a <= value <= b or c <= value <= d
+        return Field(key, a, b, c, d, lambda value: a <= value <= b or c <= value <= d)
 
     def parse_input(self):
         raw = self.input_text.split('\n\n')
-        validators = [self.parse_validator_line(line) for line in raw[0].splitlines()]
+        validators = [self.parse_field_line(line) for line in raw[0].splitlines()]
         my_ticket = util.find_all_ints(raw[1])
         nearby_tickets = np.array([util.find_all_ints(line) for line in raw[-1].splitlines()[1:]])
         return validators, my_ticket, nearby_tickets
 
-    def filter_valid_tickets(self, tickets: np.ndarray, validators: List[tuple]):
-        invalid = set()
-        for index, value in np.ndenumerate(tickets):
-            for valid in validators:
-                if not valid[1](value):
-                    print(end=f'bad: {index[0]}, ')
-                    invalid.add(index[0])
-                    break
-
-        return np.array([v for i, v in enumerate(tickets) if i not in invalid])
+    def filter_valid_tickets(self, tickets: np.ndarray, fields: List[Field]):
+        pass
 
     def solve(self):
-        validators, my_ticket, raw_tickets = self.parse_input()
-        tickets = self.filter_valid_tickets(raw_tickets, validators)
+        fields, my_ticket, raw_tickets = self.parse_input()
+        util.print_all(*fields, sep='\n')
+        tickets = self.filter_valid_tickets(raw_tickets, fields)
         print(tickets.shape[0], 190)
 
-        answer = reduce(operator.mul, (my_ticket[validator.index] for validator in validators if validator))
+        answer = reduce(operator.mul, (my_ticket[validator.index] for validator in fields if validator))
         print('16:2 =>', answer)
