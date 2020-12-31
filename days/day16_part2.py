@@ -45,19 +45,19 @@ class Day16Part2(Day):
             for f in fields
         )
 
+    def check_column(self, col, tickets, field):
+        return all(field.a <= value <= field.b or field.c <= value <= field.d for value in tickets[:, col])
+
     def solve(self):
         fields, my_ticket, raw_tickets = self.parse_input()
         util.print_all(*fields, sep='\n')
         tickets = np.array([ticket for ticket in raw_tickets if not any(self.is_invalid(n, fields) for n in ticket)])
-        unused_columns = set(range(len(tickets[0])))
 
-        found_cols = {}
-        for name, a, b, c, d in fields:
-            matches = [col for col in unused_columns if all(a <= value <= b or c <= value <= d for value in tickets[:, col])]
-            if len(matches) == 1:
+        answer = 1
+        for col in range(tickets.shape[1]):
+            matches = [field.name for field in fields if self.check_column(col, tickets, field)]
+            if len(matches) == 1 and matches[0].startswith('departure'):
                 print(matches)
-                found_cols[name] = matches[0]
-                unused_columns.discard(matches[0])
+                answer *= my_ticket[col]
 
-        answer = reduce(operator.mul, (my_ticket[found_cols[field.name]] for field in fields if field.name.startswith('departure')))
         print('16:2 =>', answer)
