@@ -1,12 +1,14 @@
 import math
 import operator
 import re
-from collections import namedtuple
+from collections import namedtuple, deque
 from functools import reduce
 from typing import List
 
 import numpy as np
 from dataclasses import dataclass
+
+from icecream import ic
 
 from day import Day, util
 
@@ -50,14 +52,18 @@ class Day16Part2(Day):
 
     def solve(self):
         fields, my_ticket, raw_tickets = self.parse_input()
-        util.print_all(*fields, sep='\n')
         tickets = np.array([ticket for ticket in raw_tickets if not any(self.is_invalid(n, fields) for n in ticket)])
 
         answer = 1
-        for col in range(tickets.shape[1]):
-            matches = [field.name for field in fields if self.check_column(col, tickets, field)]
-            if len(matches) == 1 and matches[0].startswith('departure'):
-                print(matches)
-                answer *= my_ticket[col]
+        columns_left = set(range(tickets.shape[1]))
+        while columns_left:
+            for field in fields:
+                matches = [col for col in columns_left if self.check_column(col, tickets, field)]
+                if len(matches) != 1:
+                    continue
+
+                columns_left.discard(matches[0])
+                if field.name.lower().startswith('departure'):
+                    answer *= my_ticket[matches[0]]
 
         print('16:2 =>', answer)
