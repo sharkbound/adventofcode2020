@@ -1,14 +1,7 @@
-import math
-import operator
 import re
-from collections import namedtuple, deque
-from functools import reduce
-from typing import List
+from collections import namedtuple
 
 import numpy as np
-from dataclasses import dataclass
-
-from icecream import ic
 
 from day import Day, util
 

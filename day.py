@@ -51,7 +51,7 @@ class Day:
 
         return self.input_path.read_text()
 
-    @cached_property
+    @property
     def input_text_lines(self):
         return self.input_text.splitlines(keepends=False)
 
@@ -61,6 +61,10 @@ class Day:
     @property
     def input_sample(self) -> str:
         return self.get_sample_input()
+
+    @property
+    def input_sample_lines(self):
+        return self.input_text.splitlines(keepends=False)
 
     def parse_input(self):
         return self.input_text
