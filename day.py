@@ -64,7 +64,7 @@ class Day:
 
     @property
     def input_sample_lines(self):
-        return self.input_text.splitlines(keepends=False)
+        return self.input_sample.splitlines(keepends=False)
 
     def parse_input(self):
         return self.input_text
