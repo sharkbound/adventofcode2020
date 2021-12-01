@@ -24,23 +24,24 @@ class Day17Part1(Day):
 
     def solve(self):
         data = self.parse_input()
-        while True:
+        for loop in itertools.count(1):
             # create a blank array that is +2 length of the current data, this is to expand its z axis
-            data = self.fill_mid_section(self.create_zero_filled_expanded_z_array(data, 2), data)
-            print(f'===========\nEX: {data}\n=============')
+            data = self.fill_mid_section(self.expand_array_z(data, 2), data)
+            print(f'===========\nPRE_PROCESSED: {data}\n=============')
             blank = np.zeros(data.shape)
 
             for indexes, value in np.ndenumerate(data):
                 _, alive, dead = self.get_neighbors(data, *indexes)
                 if value == 1:
-                    blank[indexes] = 1 if value in {2, 3} else 0
+                    blank[indexes] = 1 if alive in {2, 3} else 0
                 elif value == 0:
                     blank[indexes] = 1 if alive == 3 else 0
 
-
-            data = self.pad_inner_arrays(blank)
             print(data)
-            exit()
+            data = self.expand_inner_arrays(blank)
+
+            if loop == 3:
+                exit()
 
     def parse_input(self):
         lines = [[int(symbol == ACTIVE) for symbol in row] for row in self.input_sample_lines]
@@ -60,7 +61,7 @@ class Day17Part1(Day):
         )
 
     @staticmethod
-    def create_zero_filled_expanded_z_array(data: np.ndarray, times: int = 2):
+    def expand_array_z(data: np.ndarray, times: int = 2):
         return np.full(((s := data.shape)[0] + times, s[1], s[2]), fill_value=0)
 
     @staticmethod
@@ -69,7 +70,7 @@ class Day17Part1(Day):
         return to_fill
 
     @staticmethod
-    def pad_inner_arrays(data: np.ndarray):
+    def expand_inner_arrays(data: np.ndarray):
         shape = data.shape
         output = np.full((shape[0], shape[1] + 2, shape[2] + 2), fill_value=0)
         for i, row in enumerate(data):
